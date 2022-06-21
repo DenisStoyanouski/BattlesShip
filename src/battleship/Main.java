@@ -87,7 +87,7 @@ public class Main {
     }
 
     public static void CurrentField() {
-
+        // display current version of field;
         System.out.print("  ");
         for (String a : horAddress) {
             System.out.print(a + " ");
