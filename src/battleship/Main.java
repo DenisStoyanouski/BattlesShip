@@ -62,7 +62,7 @@ public class Main {
         int beginHor = horAddress.indexOf(String.valueOf(coordinateBegin.charAt(1)));
         int endVer = verAddress.indexOf(String.valueOf(coordinateEnd.charAt(0)));
         int endHor = horAddress.indexOf(String.valueOf(coordinateEnd.charAt(1)));
-        battleField[5][5] = '0';
+        battleField[0][0] = '0';
 
         boolean fuckCheck = true;
             //check size of ship
@@ -76,14 +76,18 @@ public class Main {
             fuckCheck = false;
         }
         //check placing to another one;
-        for (int i = beginHor - 1; i <= endHor + 1; i++) {
-            for (int j = beginVer - 1; j <= endVer + 1; j++) {
-                if (battleField[j][i] == '0') {
-                    fuckCheck = false;
-                    System.out.println("Error! You placed it too close to another one. Try again:");
-                    break;
+        try {
+            for (int i = beginHor - 1; i <= endHor + 1; i++) {
+                for (int j = beginVer - 1; j <= endVer + 1; j++) {
+                    if (battleField[j][i] == '0') {
+                        fuckCheck = false;
+                        System.out.println("Error! You placed it too close to another one. Try again:");
+                        break;
+                    }
                 }
             }
+        } catch (Exception e) {
+            // just do nothing
         }
         if (fuckCheck) {
             // filling cells with 0;
