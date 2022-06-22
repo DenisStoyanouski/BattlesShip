@@ -12,8 +12,6 @@ public class Main {
     static String coordinateBegin;
     static String coordinateEnd;
 
-    private static boolean fuckCheck = false;
-
     final private static List<String> verAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
 
     final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
@@ -59,18 +57,37 @@ public class Main {
     public static void Coordinate() {
 
         try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
-            coordinateBegin = scanner.next().toUpperCase();
-            coordinateEnd = scanner.next().toUpperCase();
+            boolean check;
+            do {
+                check = true;
+                coordinateBegin = scanner.next().toUpperCase();
+                coordinateEnd = scanner.next().toUpperCase();
+                if (!coordinateBegin.matches("[A-Z]\\d\\d?") || !coordinateEnd.matches("[A-Z]\\d\\d?")) {
+                    System.out.println("Try again");
+                    check = false;
+                } else if (!verAddress.contains(coordinateBegin.substring(0, 1)) || !horAddress.contains(coordinateBegin.substring(1))) {
+                    System.out.println("Change the coordinate of the begin");
+                    check = false;
+                } else if (!verAddress.contains(coordinateEnd.substring(0,1)) || !horAddress.contains(coordinateEnd.substring(1))) {
+                    System.out.println("Change the coordinate of the end");
+                    check = false;
+                }
+            } while (check != true);
+
         } catch (Exception e) {
             e.getMessage();
         }
+
+        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
+
+
         int beginVer = verAddress.indexOf(String.valueOf(coordinateBegin.charAt(0)));
         int beginHor = horAddress.indexOf(String.valueOf(coordinateBegin.charAt(1)));
         int endVer = verAddress.indexOf(String.valueOf(coordinateEnd.charAt(0)));
         int endHor = horAddress.indexOf(String.valueOf(coordinateEnd.charAt(1)));
         System.out.printf("beginHor - %d, beginVer - %d, endHor - %d, endVer - %d %n", beginHor, beginVer, endHor, endVer);
 
+        boolean fuckCheck = false;
         if (Math.abs(beginHor - endHor) != 4 && Math.abs(beginVer - endVer) != 4) {
             System.out.println("Error! Wrong length of the Submarine! Try again:");
             fuckCheck = false;
