@@ -62,17 +62,30 @@ public class Main {
         int beginHor = horAddress.indexOf(String.valueOf(coordinateBegin.charAt(1)));
         int endVer = verAddress.indexOf(String.valueOf(coordinateEnd.charAt(0)));
         int endHor = horAddress.indexOf(String.valueOf(coordinateEnd.charAt(1)));
-        System.out.printf("beginHor - %d, beginVer - %d, endHor - %d, endVer - %d %n", beginHor, beginVer, endHor, endVer);
-        //check size of ship
-        boolean fuckCheck = false;
+        battleField[5][5] = '0';
+
+        boolean fuckCheck = true;
+            //check size of ship
         if (Math.abs(beginHor - endHor) != 4 && Math.abs(beginVer - endVer) != 4) {
             System.out.println("Error! Wrong length of the Submarine! Try again:");
             fuckCheck = false;
-            //check ship direction is not diagonal;
-        } else if (beginHor != endHor && beginVer != endVer) {
+        }
+        //check ship direction is not diagonal;
+        if (beginHor != endHor && beginVer != endVer) {
             System.out.println("Error! Wrong ship location! Try again:");
             fuckCheck = false;
-        } else {
+        }
+        //check placing to another one;
+        for (int i = beginHor - 1; i <= endHor + 1; i++) {
+            for (int j = beginVer - 1; j <= endVer + 1; j++) {
+                if (battleField[j][i] == '0') {
+                    fuckCheck = false;
+                    System.out.println("Error! You placed it too close to another one. Try again:");
+                    break;
+                }
+            }
+        }
+        if (fuckCheck) {
             // filling cells with 0;
             if (beginHor == endHor) {
                 for (int i = beginVer; i <= endVer; i++) {
@@ -83,9 +96,6 @@ public class Main {
                     battleField[beginVer][i] = 'O';
                 }
             }
-            fuckCheck = true;
-            System.out.println(beginHor - beginVer);
-            System.out.println(endHor - endVer);
         }
     }
 
