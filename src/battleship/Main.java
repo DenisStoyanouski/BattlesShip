@@ -109,7 +109,7 @@ public class Main {
         for (String a : horAddress) {
             System.out.print(a + " ");
         }
-        System.out.println("");
+        System.out.println(" ");
 
         for (int i = 0; i < battleField.length; i++) {
             System.out.print(verAddress.get(i));
