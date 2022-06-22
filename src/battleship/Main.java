@@ -4,8 +4,6 @@ import java.util.*;
 
 
 public class Main {
-    private static int fieldHorizontal;
-    private static int fieldVertical;
 
     final private static char[][] battleField = new char[10][10];
 
@@ -16,27 +14,6 @@ public class Main {
 
     final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
-    public Main(int fieldHorizontal, int fieldVertical) {
-        fieldHorizontal = this.fieldHorizontal;
-        fieldVertical = this.fieldVertical;
-    }
-
-    public int getFieldHorizontal() {
-        return fieldHorizontal;
-    }
-
-    public int getFieldVertical() {
-        return fieldVertical;
-    }
-
-    public void setFieldHorizontal(int fieldHorizontal) {
-        this.fieldHorizontal = fieldHorizontal;
-    }
-
-    public void setFieldVertical(int fieldVertical) {
-        this.fieldVertical = fieldVertical;
-    }
-
     public static void main(String[] args) {
         Field();
         Coordinate();
@@ -45,7 +22,7 @@ public class Main {
 
     // create field
     public static void Field() {
-
+        //Create empty battleField;
         for (int i = 0; i < battleField.length; i++) {
             for (int j = 0; j < battleField[0].length; j++) {
                 battleField[i][j] = '~';
@@ -56,6 +33,7 @@ public class Main {
 
     public static void Coordinate() {
 
+        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
         try (Scanner scanner = new Scanner(System.in)) {
             boolean check;
             do {
@@ -72,31 +50,39 @@ public class Main {
                     System.out.println("Change the coordinate of the end");
                     check = false;
                 }
-            } while (check != true);
+            } while (!check);
 
         } catch (Exception e) {
             e.getMessage();
         }
 
-        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
 
-
+        //return input data into useful form for array;
         int beginVer = verAddress.indexOf(String.valueOf(coordinateBegin.charAt(0)));
         int beginHor = horAddress.indexOf(String.valueOf(coordinateBegin.charAt(1)));
         int endVer = verAddress.indexOf(String.valueOf(coordinateEnd.charAt(0)));
         int endHor = horAddress.indexOf(String.valueOf(coordinateEnd.charAt(1)));
         System.out.printf("beginHor - %d, beginVer - %d, endHor - %d, endVer - %d %n", beginHor, beginVer, endHor, endVer);
-
+        //check size of ship
         boolean fuckCheck = false;
         if (Math.abs(beginHor - endHor) != 4 && Math.abs(beginVer - endVer) != 4) {
             System.out.println("Error! Wrong length of the Submarine! Try again:");
             fuckCheck = false;
+            //check ship direction is not diagonal;
         } else if (beginHor != endHor && beginVer != endVer) {
             System.out.println("Error! Wrong ship location! Try again:");
             fuckCheck = false;
         } else {
-            battleField[beginVer][beginHor] = 'O';
-            battleField[endVer][endHor] = 'O';
+            // filling cells with 0;
+            if (beginHor == endHor) {
+                for (int i = beginVer; i <= endVer; i++) {
+                    battleField[i][endHor] = 'O';
+                }
+            } else {
+                for (int i = beginHor; i<= endHor; i++) {
+                    battleField[beginVer][i] = 'O';
+                }
+            }
             fuckCheck = true;
             System.out.println(beginHor - beginVer);
             System.out.println(endHor - endVer);
@@ -119,6 +105,7 @@ public class Main {
             System.out.println();
         }
     }
+
 }
 
 
