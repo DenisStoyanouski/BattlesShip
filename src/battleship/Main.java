@@ -15,15 +15,20 @@ public class Main {
     static int endVer;
     static int endHor;
 
+    final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier","Battleship", "Submarine", "Cruiser", "Destroyer");
+
+    final private static List<Integer> longOfShip = Arrays.asList(5, 4, 3, 3, 2);
     final private static List<String> verAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
 
     final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
     public static void main(String[] args) {
-        Field();
-        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
-        Coordinate();
-        CurrentField();
+        //Field();
+        for (String ship : typeOfShip) {
+            System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship, longOfShip.get(typeOfShip.indexOf(ship)));
+        }
+       //Coordinate();
+        //CurrentField();
     }
 
     // create field
@@ -111,8 +116,6 @@ public class Main {
             }
         }
     }
-
-
 
     public static void CurrentField() {
         // display current version of field;
