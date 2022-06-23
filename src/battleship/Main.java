@@ -15,20 +15,22 @@ public class Main {
     static int endVer;
     static int endHor;
 
-    final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier","Battleship", "Submarine", "Cruiser", "Destroyer");
+    final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer");
 
-    final private static List<Integer> longOfShip = Arrays.asList(5, 4, 3, 3, 2);
+    final private static List<Integer> lengthOfShip = Arrays.asList(5, 4, 3, 3, 2);
+
+    private static int length;
+    private static String nameOfShip;
     final private static List<String> verAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
 
     final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
     public static void main(String[] args) {
-        //Field();
+        Field();
         for (String ship : typeOfShip) {
-            System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship, longOfShip.get(typeOfShip.indexOf(ship)));
+            System.out.printf("Enter the coordinates of the %s (%d cells):%n", nameOfShip = ship, length = lengthOfShip.get(typeOfShip.indexOf(ship)));
+            Coordinate(nameOfShip, length);
         }
-       //Coordinate();
-        //CurrentField();
     }
 
     // create field
@@ -42,46 +44,46 @@ public class Main {
         CurrentField();
     }
 
-    public static void Coordinate() {
+    public static void Coordinate(String nameOfShip, int length) {
+        System.out.println(nameOfShip);
+            try (Scanner scanner = new Scanner(System.in)) {
+                boolean check;
+                do {
+                    check = true;
+                    coordinateBegin = scanner.next().toUpperCase();
+                    coordinateEnd = scanner.next().toUpperCase();
+                    //return input data into useful form for array;
+                    beginVer = verAddress.indexOf(coordinateBegin.substring(0, 1));
+                    beginHor = horAddress.indexOf(coordinateBegin.substring(1));
+                    endVer = verAddress.indexOf(coordinateEnd.substring(0, 1));
+                    endHor = horAddress.indexOf(coordinateEnd.substring(1));
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            boolean check;
-            do {
-                check = true;
-                coordinateBegin = scanner.next().toUpperCase();
-                coordinateEnd = scanner.next().toUpperCase();
-                //return input data into useful form for array;
-                beginVer = verAddress.indexOf(coordinateBegin.substring(0, 1));
-                beginHor = horAddress.indexOf(coordinateBegin.substring(1));
-                endVer = verAddress.indexOf(coordinateEnd.substring(0, 1));
-                endHor = horAddress.indexOf(coordinateEnd.substring(1));
+                    if (!coordinateBegin.matches("[A-Z]\\d\\d?") || !coordinateEnd.matches("[A-Z]\\d\\d?")) {
+                        System.out.println("Try again");
+                        check = false;
+                    } else if (!verAddress.contains(coordinateBegin.substring(0, 1)) || !horAddress.contains(coordinateBegin.substring(1))) {
+                        System.out.println("Change the coordinate of the begin");
+                        check = false;
+                    } else if (!verAddress.contains(coordinateEnd.substring(0, 1)) || !horAddress.contains(coordinateEnd.substring(1))) {
+                        System.out.println("Change the coordinate of the end");
+                        check = false;
+                    } else if (!checkReplacementOfShip(length)) {
+                        check = false;
+                    }
+                } while (!check);
 
-                if (!coordinateBegin.matches("[A-Z]\\d\\d?") || !coordinateEnd.matches("[A-Z]\\d\\d?")) {
-                    System.out.println("Try again");
-                    check = false;
-                } else if (!verAddress.contains(coordinateBegin.substring(0, 1)) || !horAddress.contains(coordinateBegin.substring(1))) {
-                    System.out.println("Change the coordinate of the begin");
-                    check = false;
-                } else if (!verAddress.contains(coordinateEnd.substring(0, 1)) || !horAddress.contains(coordinateEnd.substring(1))) {
-                    System.out.println("Change the coordinate of the end");
-                    check = false;
-                } else if (!checkReplacementOfShip()) {
-                    check = false;
-                }
-            } while (!check);
+            } catch (Exception e) {
+                e.getMessage();
+            }
 
-        } catch (Exception e) {
-            e.getMessage();
-        }
-
-        ReplacementOfShip();
+            ReplacementOfShip();
     }
 
-    static boolean checkReplacementOfShip() {
+    static boolean checkReplacementOfShip(int length) {
         boolean checkReplacement = true;
-
+        System.out.println(length);
         //check size of ship
-        if (Math.abs(beginHor - endHor) != 4 && Math.abs(beginVer - endVer) != 4) {
+        if (Math.abs(beginHor - endHor) != (length - 1)  && Math.abs(beginVer - endVer) != (length - 1)) {
             System.out.println("Error! Wrong length of the Submarine! Try again:");
             checkReplacement = false;
         } else if (beginHor != endHor && beginVer != endVer) { //check ship direction is not diagonal;
@@ -115,6 +117,7 @@ public class Main {
                 battleField[beginVer][i] = 'O';
             }
         }
+        CurrentField();
     }
 
     public static void CurrentField() {
