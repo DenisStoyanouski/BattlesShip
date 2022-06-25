@@ -33,31 +33,33 @@ public class Main {
 
     final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
+    static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        Field();
-        Coordinate();
+        field();
+        game();
     }
 
     // create field
-    public static void Field() {
+    public static void field() {
         //Create empty battleField;
         for (int i = 0; i < battleField.length; i++) {
             for (int j = 0; j < battleField[0].length; j++) {
                 battleField[i][j] = '~';
             }
         }
-        CurrentField();
+        currentField();
     }
 
-    public static void Coordinate() {
+    public static void game() {
         String inputFirst;
         String inputSecond;
+        String shotInput;
         int beginVer;
         int beginHor;
         int endVer;
         int endHor;
 
-            try (Scanner scanner = new Scanner(System.in)) {
+            try {
                 for (String ship : typeOfShip) {
                     int length = lengthOfShip.get(typeOfShip.indexOf(ship));
                     System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship, length);
@@ -77,8 +79,13 @@ public class Main {
                             endHor = horAddress.indexOf(inputSecond.substring(1));
                         }
                     } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer));
-                    ReplacementOfShip(beginHor, beginVer, endHor, endVer);
+                    placementOfShip(beginHor, beginVer, endHor, endVer);
                 }
+                System.out.println("The game starts!");
+                currentField();
+                System.out.println("Take a shot!");
+                shotInput = scanner.next().toUpperCase();
+                makeShot(shotInput);
             } catch(Exception e){
                     e.getMessage();
             }
@@ -88,13 +95,13 @@ public class Main {
     static boolean checkOfInput(String inputFirst, String inputSecond, int length, int beginHor, int beginVer, int endHor, int endVer) {
         boolean check = true;
         if (!inputFirst.matches("[A-Z]\\d\\d?") || !inputSecond.matches("[A-Z]\\d\\d?")) {
-            System.out.println("Try again");
+            System.out.println("Error! You entered the wrong coordinates! Try again:\"");
             check = false;
         } else if (!verAddress.contains(inputFirst.substring(0, 1)) || !horAddress.contains(inputFirst.substring(1))) {
-            System.out.println("Change the coordinate of the begin");
+            System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
         } else if (!verAddress.contains(inputSecond.substring(0, 1)) || !horAddress.contains(inputSecond.substring(1))) {
-            System.out.println("Change the coordinate of the end");
+            System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
         } else if (!checkReplacementOfShip(beginHor, beginVer, endHor, endVer, length)) {
             check = false;
@@ -132,7 +139,7 @@ public class Main {
         return checkReplacement;
     }
 
-    static void ReplacementOfShip(int beginHor, int beginVer, int endHor, int endVer) {
+    static void placementOfShip(int beginHor, int beginVer, int endHor, int endVer) {
         if (beginHor == endHor) {
             for (int i = beginVer; i <= endVer; i++) {
                 battleField[i][endHor] = 'O';
@@ -142,10 +149,10 @@ public class Main {
                 battleField[beginVer][i] = 'O';
             }
         }
-        CurrentField();
+        currentField();
     }
 
-    public static void CurrentField() {
+    public static void currentField() {
         // display current version of field;
         System.out.print("  ");
         for (String a : horAddress) {
@@ -158,8 +165,40 @@ public class Main {
             for (char b : battleField[i]) {
                 System.out.print(" " + b);
             }
-            System.out.println();
+            System.out.printf("%n");
         }
+    }
+
+    public static void makeShot(String shotInput) {
+        int addressVer;
+        int addressHor;
+
+        addressVer = verAddress.indexOf(shotInput.substring(0, 1));
+        addressHor = horAddress.indexOf(shotInput.substring(1));
+        if (checkOfShotInput(shotInput)) {
+            if (battleField[addressVer][addressHor] == '~') {
+                System.out.println("You missed!");
+                battleField[addressVer][addressHor] = 'M';
+                currentField();
+            } else {
+                System.out.println("You hit a ship!");
+                battleField[addressVer][addressHor] = 'X';
+                currentField();
+            }
+
+        }
+    }
+
+    static boolean checkOfShotInput(String shotInput) {
+        boolean check = true;
+        if (!shotInput.matches("[A-Z]\\d\\d?")) {
+            System.out.println("Error! You entered the wrong coordinates! Try again:");
+            check = false;
+        } else if (!verAddress.contains(shotInput.substring(0, 1)) || !horAddress.contains(shotInput.substring(1))) {
+            System.out.println("Error! You entered the wrong coordinates! Try again:");
+            check = false;
+        }
+        return check;
     }
 
 }
