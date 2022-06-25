@@ -47,7 +47,7 @@ public class Main {
                 battleField[i][j] = '~';
             }
         }
-        currentField();
+        currentField(battleField);
     }
 
     public static void game() {
@@ -82,10 +82,15 @@ public class Main {
                     placementOfShip(beginHor, beginVer, endHor, endVer);
                 }
                 System.out.println("The game starts!");
-                currentField();
+                currentField(fogOfWar());
                 System.out.println("Take a shot!");
-                shotInput = scanner.next().toUpperCase();
-                makeShot(shotInput);
+
+                do {
+                    shotInput = scanner.next().toUpperCase();
+                    makeShot(shotInput);
+                } while(!checkOfShotInput(shotInput));
+
+                currentField(battleField);
             } catch(Exception e){
                     e.getMessage();
             }
@@ -149,10 +154,10 @@ public class Main {
                 battleField[beginVer][i] = 'O';
             }
         }
-        currentField();
+        currentField(battleField);
     }
 
-    public static void currentField() {
+    public static void currentField(char[][] array) {
         // display current version of field;
         System.out.print("  ");
         for (String a : horAddress) {
@@ -160,9 +165,9 @@ public class Main {
         }
         System.out.println(" ");
 
-        for (int i = 0; i < battleField.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             System.out.print(verAddress.get(i));
-            for (char b : battleField[i]) {
+            for (char b : array[i]) {
                 System.out.print(" " + b);
             }
             System.out.printf("%n");
@@ -177,13 +182,16 @@ public class Main {
         addressHor = horAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
             if (battleField[addressVer][addressHor] == '~') {
-                System.out.println("You missed!");
                 battleField[addressVer][addressHor] = 'M';
-                currentField();
+                currentField(fogOfWar());
+                System.out.println("You missed!");
+
             } else {
-                System.out.println("You hit a ship!");
                 battleField[addressVer][addressHor] = 'X';
-                currentField();
+                currentField(fogOfWar());
+                System.out.println("You hit a ship!");
+
+
             }
 
         }
@@ -199,6 +207,19 @@ public class Main {
             check = false;
         }
         return check;
+    }
+
+    private static char[][] fogOfWar() {
+        char[][] fogOfWar = new char[10][10];
+        for (int i = 0; i < fogOfWar.length; i++) {
+            for (int j = 0; j < fogOfWar[0].length; j++) {
+                fogOfWar[i][j] = battleField[i][j];
+                if(fogOfWar[i][j] == 'O') {
+                    fogOfWar[i][j] = '~';
+                }
+            }
+        }
+        return fogOfWar;
     }
 
 }
