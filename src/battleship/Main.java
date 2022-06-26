@@ -82,9 +82,9 @@ public class Main {
                     placementOfShip(beginHor, beginVer, endHor, endVer);
                 }
                 System.out.println("The game starts!");
+                currentField(fogOfWar());
+                System.out.println("Take a shot!");
                 do {
-                    currentField(fogOfWar());
-                    System.out.println("Take a shot!");
                     do {
                         shotInput = scanner.next().toUpperCase();
                         makeShot(shotInput);
@@ -185,16 +185,17 @@ public class Main {
             if (battleField[addressVer][addressHor] == '~') {
                 battleField[addressVer][addressHor] = 'M';
                 currentField(fogOfWar());
-                System.out.println("You missed!");
-
-            } else {
+                System.out.println("You missed. Try again:");
+            } else if (battleField[addressVer][addressHor] == 'O') {
                 battleField[addressVer][addressHor] = 'X';
-                currentField(fogOfWar());
-                System.out.println("You hit a ship!");
-
-
+                if (checkShipSank(addressVer, addressHor)) {
+                    currentField(fogOfWar());
+                    System.out.println("You sank a ship! Specify a new target:");
+                } else {
+                    currentField(fogOfWar());
+                    System.out.println("You hit a ship! Try again");
+                }
             }
-
         }
     }
 
@@ -236,6 +237,25 @@ public class Main {
             System.out.println("You sank the last ship. You won. Congratulations!");
         }
         return gameOver;
+    }
+
+    private static boolean checkShipSank(int addressVer, int addressHor) {
+        boolean checkShipSank = true;
+        search:
+        for (int i = addressVer - 1; i <= addressVer + 1; i++)
+            if (i >= 0 && i < 10) {
+                for (int j = addressHor - 1; j <= addressHor + 1; j++) {
+                    if (j >= 0 && j < 10) {
+                        if (battleField[i][j] == 'O') {
+                            checkShipSank = false;
+                            break search;
+
+                        }
+                    }
+                }
+            }
+        System.out.println(checkShipSank);
+        return checkShipSank;
     }
 
 }
