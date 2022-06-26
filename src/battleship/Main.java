@@ -82,15 +82,15 @@ public class Main {
                     placementOfShip(beginHor, beginVer, endHor, endVer);
                 }
                 System.out.println("The game starts!");
-                currentField(fogOfWar());
-                System.out.println("Take a shot!");
-
                 do {
-                    shotInput = scanner.next().toUpperCase();
-                    makeShot(shotInput);
-                } while(!checkOfShotInput(shotInput));
+                    currentField(fogOfWar());
+                    System.out.println("Take a shot!");
+                    do {
+                        shotInput = scanner.next().toUpperCase();
+                        makeShot(shotInput);
+                    } while(!checkOfShotInput(shotInput));
 
-                currentField(battleField);
+                } while (!checkGameOver());
             } catch(Exception e){
                     e.getMessage();
             }
@@ -174,6 +174,7 @@ public class Main {
         }
     }
 
+
     public static void makeShot(String shotInput) {
         int addressVer;
         int addressHor;
@@ -208,7 +209,6 @@ public class Main {
         }
         return check;
     }
-
     private static char[][] fogOfWar() {
         char[][] fogOfWar = new char[10][10];
         for (int i = 0; i < fogOfWar.length; i++) {
@@ -220,6 +220,22 @@ public class Main {
             }
         }
         return fogOfWar;
+    }
+
+    private static boolean checkGameOver() {
+        boolean gameOver = true;
+        for (char[] row : battleField ) {
+            for (char cell : row) {
+                if (cell == 'O') {
+                    gameOver = false;
+                    break;
+                }
+            }
+        }
+        if (gameOver) {
+            System.out.println("You sank the last ship. You won. Congratulations!");
+        }
+        return gameOver;
     }
 
 }
