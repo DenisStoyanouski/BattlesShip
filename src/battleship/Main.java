@@ -182,7 +182,13 @@ public class Main {
         addressVer = verAddress.indexOf(shotInput.substring(0, 1));
         addressHor = horAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
-            if (battleField[addressVer][addressHor] == '~') {
+            if(battleField[addressVer][addressHor] == 'M') {
+                currentField(fogOfWar());
+                System.out.println("You missed!");
+            } else if(battleField[addressVer][addressHor] == 'X') {
+                currentField(fogOfWar());
+                System.out.println("You hit a ship!");
+            } else if (battleField[addressVer][addressHor] == '~') {
                 battleField[addressVer][addressHor] = 'M';
                 currentField(fogOfWar());
                 System.out.println("You missed. Try again:");
@@ -254,7 +260,6 @@ public class Main {
                     }
                 }
             }
-        System.out.println(checkShipSank);
         return checkShipSank;
     }
 
