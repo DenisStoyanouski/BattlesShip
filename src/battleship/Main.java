@@ -23,7 +23,10 @@ Objectives
 public class Main {
 
 
-    final private static char[][] battleField = new char[10][10];
+    final private static char[][] battleField1= new char[10][10];
+    final private static char[][] battleField2= new char[10][10];
+
+    private static int player;
 
     final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer");
 
@@ -35,19 +38,24 @@ public class Main {
 
     static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
+        player = 1;
+        System.out.printf("Player %d, place your ships on the game field %n", player);
         field();
+        changePlayer();
+        System.out.printf("Player %d, place your ships on the game field %n", player);
         game();
+
     }
 
     // create field
     public static void field() {
         //Create empty battleField;
-        for (int i = 0; i < battleField.length; i++) {
-            for (int j = 0; j < battleField[0].length; j++) {
-                battleField[i][j] = '~';
+        for (int i = 0; i < getBattleField(player).length; i++) {
+            for (int j = 0; j < getBattleField(player)[0].length; j++) {
+                getBattleField(player)[i][j] = '~';
             }
         }
-        currentField(battleField);
+        currentField(getBattleField(player));
     }
 
     public static void game() {
@@ -131,7 +139,7 @@ public class Main {
                 if (i > 0 && i < 10) {
                     for (int j = beginVer - 1; j <= endVer + 1; j++) {
                         if (j > 0 && j < 10) {
-                            if (battleField[j][i] == 'O') {
+                            if (getBattleField(player)[j][i] == 'O') {
                                 System.out.println("Error! You placed it too close to another one. Try again:");
                                 checkReplacement = false;
                                 break search;
@@ -147,14 +155,14 @@ public class Main {
     static void placementOfShip(int beginHor, int beginVer, int endHor, int endVer) {
         if (beginHor == endHor) {
             for (int i = beginVer; i <= endVer; i++) {
-                battleField[i][endHor] = 'O';
+                getBattleField(player)[i][endHor] = 'O';
             }
         } else {
             for (int i = beginHor; i <= endHor; i++) {
-                battleField[beginVer][i] = 'O';
+                getBattleField(player)[beginVer][i] = 'O';
             }
         }
-        currentField(battleField);
+        currentField(getBattleField(player));
     }
 
     public static void currentField(char[][] array) {
@@ -174,7 +182,6 @@ public class Main {
         }
     }
 
-
     public static void makeShot(String shotInput) {
         int addressVer;
         int addressHor;
@@ -182,18 +189,18 @@ public class Main {
         addressVer = verAddress.indexOf(shotInput.substring(0, 1));
         addressHor = horAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
-            if(battleField[addressVer][addressHor] == 'M') {
+            if(getBattleField(player)[addressVer][addressHor] == 'M') {
                 currentField(fogOfWar());
                 System.out.println("You missed!");
-            } else if(battleField[addressVer][addressHor] == 'X') {
+            } else if(getBattleField(player)[addressVer][addressHor] == 'X') {
                 currentField(fogOfWar());
                 System.out.println("You hit a ship!");
-            } else if (battleField[addressVer][addressHor] == '~') {
-                battleField[addressVer][addressHor] = 'M';
+            } else if (getBattleField(player)[addressVer][addressHor] == '~') {
+                getBattleField(player)[addressVer][addressHor] = 'M';
                 currentField(fogOfWar());
                 System.out.println("You missed. Try again:");
-            } else if (battleField[addressVer][addressHor] == 'O') {
-                battleField[addressVer][addressHor] = 'X';
+            } else if (getBattleField(player)[addressVer][addressHor] == 'O') {
+                getBattleField(player)[addressVer][addressHor] = 'X';
                 if (checkShipSank(addressVer, addressHor)) {
                     currentField(fogOfWar());
                     System.out.println("You sank a ship! Specify a new target:");
@@ -216,11 +223,12 @@ public class Main {
         }
         return check;
     }
+
     private static char[][] fogOfWar() {
         char[][] fogOfWar = new char[10][10];
         for (int i = 0; i < fogOfWar.length; i++) {
             for (int j = 0; j < fogOfWar[0].length; j++) {
-                fogOfWar[i][j] = battleField[i][j];
+                fogOfWar[i][j] = getBattleField(player)[i][j];
                 if(fogOfWar[i][j] == 'O') {
                     fogOfWar[i][j] = '~';
                 }
@@ -229,9 +237,10 @@ public class Main {
         return fogOfWar;
     }
 
+    // the method check that all ships on the battlefield was sunk;
     private static boolean checkGameOver() {
         boolean gameOver = true;
-        for (char[] row : battleField ) {
+        for (char[] row : getBattleField(player) ) {
             for (char cell : row) {
                 if (cell == 'O') {
                     gameOver = false;
@@ -245,6 +254,7 @@ public class Main {
         return gameOver;
     }
 
+    // the method for checking all cells of the ship was shot and the ship is sunk;
     private static boolean checkShipSank(int addressVer, int addressHor) {
         boolean checkShipSank = true;
         search:
@@ -252,7 +262,7 @@ public class Main {
             if (i >= 0 && i < 10) {
                 for (int j = addressHor - 1; j <= addressHor + 1; j++) {
                     if (j >= 0 && j < 10) {
-                        if (battleField[i][j] == 'O') {
+                        if (getBattleField(player)[i][j] == 'O') {
                             checkShipSank = false;
                             break search;
 
@@ -261,6 +271,21 @@ public class Main {
                 }
             }
         return checkShipSank;
+    }
+
+    // the method for switching between players by enter;
+    static void changePlayer() {
+        System.out.println("Press Enter and pass the move to another player");
+        if (!scanner.hasNext() && player == 1) {
+            player = 2;
+        } else if (!scanner.hasNext() && player == 2) {
+            player = 1;
+        }
+    }
+
+    //method for take the battlefield of a current player;
+    static char[][] getBattleField(int player) {
+        return player == 1 ? battleField1 : battleField2;
     }
 
 }
