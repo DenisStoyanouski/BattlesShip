@@ -39,16 +39,12 @@ public class Main {
     static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         player = 1;
-        System.out.printf("Player %d, place your ships on the game field %n", player);
-        field();
-        changePlayer();
-        System.out.printf("Player %d, place your ships on the game field %n", player);
-        game();
+        placeYourShip(player);
 
     }
 
-    // create field
-    public static void field() {
+    // method fills up all cells with fog of war;
+    public static void field(int player) {
         //Create empty battleField;
         for (int i = 0; i < getBattleField(player).length; i++) {
             for (int j = 0; j < getBattleField(player)[0].length; j++) {
@@ -58,15 +54,16 @@ public class Main {
         currentField(getBattleField(player));
     }
 
-    public static void game() {
+    public static void placeYourShip(int player) {
         String inputFirst;
         String inputSecond;
-        String shotInput;
         int beginVer;
         int beginHor;
         int endVer;
         int endHor;
-
+        for (int i = 1; i <= 2; i++) {
+            field(player);
+            System.out.printf("Player %d, place your ships on the game field %n", player);
             try {
                 for (String ship : typeOfShip) {
                     int length = lengthOfShip.get(typeOfShip.indexOf(ship));
@@ -87,22 +84,27 @@ public class Main {
                             endHor = horAddress.indexOf(inputSecond.substring(1));
                         }
                     } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer));
-                    placementOfShip(beginHor, beginVer, endHor, endVer);
+                    placementOfShip(beginHor, beginVer, endHor, endVer, player);
                 }
-                System.out.println("The game starts!");
-                currentField(fogOfWar());
-                System.out.println("Take a shot!");
-                do {
-                    do {
-                        shotInput = scanner.next().toUpperCase();
-                        makeShot(shotInput);
-                    } while(!checkOfShotInput(shotInput));
-
-                } while (!checkGameOver());
             } catch(Exception e){
-                    e.getMessage();
+                e.getMessage();
             }
+            player++;
+        }
+    }
 
+    private static void makeShot(int player) {
+        String shotInput;
+        System.out.println("The game starts!");
+        currentField(fogOfWar());
+        System.out.println("Take a shot!");
+        do {
+            do {
+                shotInput = scanner.next().toUpperCase();
+                resultOfShot(shotInput);
+            } while(!checkOfShotInput(shotInput));
+
+        } while (!checkGameOver());
     }
 
     static boolean checkOfInput(String inputFirst, String inputSecond, int length, int beginHor, int beginVer, int endHor, int endVer) {
@@ -116,14 +118,14 @@ public class Main {
         } else if (!verAddress.contains(inputSecond.substring(0, 1)) || !horAddress.contains(inputSecond.substring(1))) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
-        } else if (!checkReplacementOfShip(beginHor, beginVer, endHor, endVer, length)) {
+        } else if (!checkReplacementOfShip(beginHor, beginVer, endHor, endVer, length, player)) {
             check = false;
         }
         return check;
 
     }
 
-    static boolean checkReplacementOfShip(int beginHor, int beginVer, int endHor, int endVer, int length) {
+    static boolean checkReplacementOfShip(int beginHor, int beginVer, int endHor, int endVer, int length, int player) {
         boolean checkReplacement = true;
         //check size of ship
         if (Math.abs(beginHor - endHor) != (length - 1)  && Math.abs(beginVer - endVer) != (length - 1)) {
@@ -152,7 +154,7 @@ public class Main {
         return checkReplacement;
     }
 
-    static void placementOfShip(int beginHor, int beginVer, int endHor, int endVer) {
+    static void placementOfShip(int beginHor, int beginVer, int endHor, int endVer, int player) {
         if (beginHor == endHor) {
             for (int i = beginVer; i <= endVer; i++) {
                 getBattleField(player)[i][endHor] = 'O';
@@ -182,7 +184,7 @@ public class Main {
         }
     }
 
-    public static void makeShot(String shotInput) {
+    public static void resultOfShot(String shotInput) {
         int addressVer;
         int addressHor;
 
