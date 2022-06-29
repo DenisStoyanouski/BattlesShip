@@ -1,5 +1,6 @@
 package battleship;
 
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -26,7 +27,7 @@ public class Main {
     final private static char[][] battleField1= new char[10][10];
     final private static char[][] battleField2= new char[10][10];
 
-    private static int player;
+    private static int player = 1;
 
     final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer");
 
@@ -38,9 +39,7 @@ public class Main {
 
     static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        player = 1;
         placeYourShip(player);
-
     }
 
     // method fills up all cells with fog of war;
@@ -61,7 +60,7 @@ public class Main {
         int beginHor;
         int endVer;
         int endHor;
-        for (int i = 1; i <= 2; i++) {
+
             field(player);
             System.out.printf("Player %d, place your ships on the game field %n", player);
             try {
@@ -89,14 +88,21 @@ public class Main {
             } catch(Exception e){
                 e.getMessage();
             }
-            player++;
-        }
+        changePlayer(player);
+    }
+
+    private static void shooting() {
+
+            fogOfWar(2);
+            System.out.println("-----------------");
+            field(1);
+
     }
 
     private static void makeShot(int player) {
         String shotInput;
         System.out.println("The game starts!");
-        currentField(fogOfWar());
+        currentField(fogOfWar(player));
         System.out.println("Take a shot!");
         do {
             do {
@@ -192,22 +198,22 @@ public class Main {
         addressHor = horAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
             if(getBattleField(player)[addressVer][addressHor] == 'M') {
-                currentField(fogOfWar());
+                currentField(fogOfWar(player));
                 System.out.println("You missed!");
             } else if(getBattleField(player)[addressVer][addressHor] == 'X') {
-                currentField(fogOfWar());
+                currentField(fogOfWar(player));
                 System.out.println("You hit a ship!");
             } else if (getBattleField(player)[addressVer][addressHor] == '~') {
                 getBattleField(player)[addressVer][addressHor] = 'M';
-                currentField(fogOfWar());
+                currentField(fogOfWar(player));
                 System.out.println("You missed. Try again:");
             } else if (getBattleField(player)[addressVer][addressHor] == 'O') {
                 getBattleField(player)[addressVer][addressHor] = 'X';
                 if (checkShipSank(addressVer, addressHor)) {
-                    currentField(fogOfWar());
+                    currentField(fogOfWar(player));
                     System.out.println("You sank a ship! Specify a new target:");
                 } else {
-                    currentField(fogOfWar());
+                    currentField(fogOfWar(player));
                     System.out.println("You hit a ship! Try again");
                 }
             }
@@ -226,7 +232,7 @@ public class Main {
         return check;
     }
 
-    private static char[][] fogOfWar() {
+    private static char[][] fogOfWar(int player) {
         char[][] fogOfWar = new char[10][10];
         for (int i = 0; i < fogOfWar.length; i++) {
             for (int j = 0; j < fogOfWar[0].length; j++) {
@@ -276,14 +282,21 @@ public class Main {
     }
 
     // the method for switching between players by enter;
-    static void changePlayer() {
-        System.out.println("Press Enter and pass the move to another player");
-        if (!scanner.hasNext() && player == 1) {
-            player = 2;
-        } else if (!scanner.hasNext() && player == 2) {
-            player = 1;
-        }
+    private static int changePlayer(int player) {
+        System.out.printf("Press Enter and pass the move to another player for player%d %n", player);
+        String change = scanner.nextLine();
+            if (scanner.hasNextLine() && player != 1) {
+                player = 1;
+                System.out.printf("Current player %d%n", player);
+                placeYourShip(player);
+            } else if (scanner.hasNextLine() && player !=2 ) {
+                player = 2;
+                System.out.printf("Current player %d%n", player);
+                placeYourShip(player);
+            }
+        return player;
     }
+
 
     //method for take the battlefield of a current player;
     static char[][] getBattleField(int player) {
