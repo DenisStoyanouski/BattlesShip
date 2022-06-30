@@ -29,6 +29,10 @@ public class Main {
 
     private static int player = 1;
 
+    private static boolean allShipsAreReplacedPlayer1 = false;
+
+    private static boolean allShipsAreReplacedPlayer2 = false;
+
     final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer");
 
     final private static List<Integer> lengthOfShip = Arrays.asList(5, 4, 3, 3, 2);
@@ -61,8 +65,9 @@ public class Main {
         int endVer;
         int endHor;
 
-            field(player);
-            System.out.printf("Player %d, place your ships on the game field %n", player);
+
+        System.out.printf("Player %d, place your ships on the game field %n", player);
+        field(player);
             try {
                 for (String ship : typeOfShip) {
                     int length = lengthOfShip.get(typeOfShip.indexOf(ship));
@@ -85,17 +90,22 @@ public class Main {
                     } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer));
                     placementOfShip(beginHor, beginVer, endHor, endVer, player);
                 }
+                if (player == 1) {
+                    allShipsAreReplacedPlayer1 = true;
+                } else {
+                    allShipsAreReplacedPlayer2 = true;
+                }
             } catch(Exception e){
                 e.getMessage();
             }
         changePlayer(player);
     }
 
-    private static void shooting() {
+    private static void shooting(int player) {
 
             fogOfWar(2);
             System.out.println("-----------------");
-            field(1);
+            field(player);
 
     }
 
@@ -288,11 +298,20 @@ public class Main {
             if (scanner.hasNextLine() && player != 1) {
                 player = 1;
                 System.out.printf("Current player %d%n", player);
-                placeYourShip(player);
+                if (!allShipsAreReplacedPlayer1) {
+                    placeYourShip(player);
+                } else {
+                    shooting(player);
+                }
             } else if (scanner.hasNextLine() && player !=2 ) {
                 player = 2;
                 System.out.printf("Current player %d%n", player);
                 placeYourShip(player);
+                if (!allShipsAreReplacedPlayer2) {
+                    placeYourShip(player);
+                } else {
+                    shooting(player);
+                }
             }
         return player;
     }
