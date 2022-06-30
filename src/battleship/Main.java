@@ -1,6 +1,5 @@
 package battleship;
 
-import java.io.IOException;
 import java.util.*;
 
 /*
@@ -90,37 +89,40 @@ public class Main {
                     } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer));
                     placementOfShip(beginHor, beginVer, endHor, endVer, player);
                 }
-                if (player == 1) {
-                    allShipsAreReplacedPlayer1 = true;
-                } else {
-                    allShipsAreReplacedPlayer2 = true;
-                }
             } catch(Exception e){
                 e.getMessage();
             }
+
+        if (player == 1) {
+            allShipsAreReplacedPlayer1 = true;
+        } else if (player == 2){
+            allShipsAreReplacedPlayer2 = true;
+        }
+
         changePlayer(player);
     }
 
     private static void shooting(int player) {
-
-            fogOfWar(2);
-            System.out.println("-----------------");
-            field(player);
-
+        if (player == 1) {
+            currentField(fogOfWar(1));
+        } else {
+            currentField(fogOfWar(2));
+        }
+        System.out.println("---------------------");
+            currentField(getBattleField(player));
+        System.out.printf("Player %d, it's your turn:%n", player);
+        makeShot(player);
     }
 
     private static void makeShot(int player) {
         String shotInput;
-        System.out.println("The game starts!");
-        currentField(fogOfWar(player));
-        System.out.println("Take a shot!");
         do {
-            do {
-                shotInput = scanner.next().toUpperCase();
-                resultOfShot(shotInput);
-            } while(!checkOfShotInput(shotInput));
-
-        } while (!checkGameOver());
+            shotInput = scanner.next().toUpperCase();
+            resultOfShot(shotInput, player);
+        } while(!checkOfShotInput(shotInput));
+        if (!checkGameOver()) {
+            changePlayer(player);
+        }
     }
 
     static boolean checkOfInput(String inputFirst, String inputSecond, int length, int beginHor, int beginVer, int endHor, int endVer) {
@@ -200,30 +202,30 @@ public class Main {
         }
     }
 
-    public static void resultOfShot(String shotInput) {
+    public static void resultOfShot(String shotInput, int player) {
         int addressVer;
         int addressHor;
-
+        int enemy;
+        if (player == 1) {
+            enemy = 2;
+        } else {
+            enemy = 1;
+        }
         addressVer = verAddress.indexOf(shotInput.substring(0, 1));
         addressHor = horAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
-            if(getBattleField(player)[addressVer][addressHor] == 'M') {
-                currentField(fogOfWar(player));
+            if(getBattleField(enemy)[addressVer][addressHor] == 'M') {
                 System.out.println("You missed!");
-            } else if(getBattleField(player)[addressVer][addressHor] == 'X') {
-                currentField(fogOfWar(player));
+            } else if(getBattleField(enemy)[addressVer][addressHor] == 'X') {
                 System.out.println("You hit a ship!");
-            } else if (getBattleField(player)[addressVer][addressHor] == '~') {
-                getBattleField(player)[addressVer][addressHor] = 'M';
-                currentField(fogOfWar(player));
+            } else if (getBattleField(enemy)[addressVer][addressHor] == '~') {
+                getBattleField(enemy)[addressVer][addressHor] = 'M';
                 System.out.println("You missed. Try again:");
-            } else if (getBattleField(player)[addressVer][addressHor] == 'O') {
-                getBattleField(player)[addressVer][addressHor] = 'X';
-                if (checkShipSank(addressVer, addressHor)) {
-                    currentField(fogOfWar(player));
+            } else if (getBattleField(enemy)[addressVer][addressHor] == 'O') {
+                getBattleField(enemy)[addressVer][addressHor] = 'X';
+                if (checkShipSank(addressVer, addressHor, enemy)) {
                     System.out.println("You sank a ship! Specify a new target:");
                 } else {
-                    currentField(fogOfWar(player));
                     System.out.println("You hit a ship! Try again");
                 }
             }
@@ -242,6 +244,7 @@ public class Main {
         return check;
     }
 
+    //method create fog of war;
     private static char[][] fogOfWar(int player) {
         char[][] fogOfWar = new char[10][10];
         for (int i = 0; i < fogOfWar.length; i++) {
@@ -273,7 +276,7 @@ public class Main {
     }
 
     // the method for checking all cells of the ship was shot and the ship is sunk;
-    private static boolean checkShipSank(int addressVer, int addressHor) {
+    private static boolean checkShipSank(int addressVer, int addressHor, int player) {
         boolean checkShipSank = true;
         search:
         for (int i = addressVer - 1; i <= addressVer + 1; i++)
@@ -292,28 +295,24 @@ public class Main {
     }
 
     // the method for switching between players by enter;
-    private static int changePlayer(int player) {
+    private static void changePlayer(int player) {
         System.out.printf("Press Enter and pass the move to another player for player%d %n", player);
         String change = scanner.nextLine();
-            if (scanner.hasNextLine() && player != 1) {
+            if (change.isEmpty() && scanner.hasNextLine() && player != 1) {
                 player = 1;
-                System.out.printf("Current player %d%n", player);
                 if (!allShipsAreReplacedPlayer1) {
                     placeYourShip(player);
                 } else {
                     shooting(player);
                 }
-            } else if (scanner.hasNextLine() && player !=2 ) {
+            } else if (scanner.hasNextLine() && player != 2 ) {
                 player = 2;
-                System.out.printf("Current player %d%n", player);
-                placeYourShip(player);
                 if (!allShipsAreReplacedPlayer2) {
                     placeYourShip(player);
                 } else {
                     shooting(player);
                 }
             }
-        return player;
     }
 
 
