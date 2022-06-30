@@ -36,11 +36,12 @@ public class Main {
 
     final private static List<Integer> lengthOfShip = Arrays.asList(5, 4, 3, 3, 2);
 
-    final private static List<String> verAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
+    final private static List<String> letterAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
 
-    final private static List<String> horAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+    final private static List<String> numberAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
     static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         player = 1;
         placeYourShip(player);
@@ -58,37 +59,38 @@ public class Main {
     }
 
     public static void placeYourShip(int player) {
-        String inputFirst;
-        String inputSecond;
-        int beginVer;
-        int beginHor;
-        int endVer;
-        int endHor;
-
 
         System.out.printf("Player %d, place your ships on the game field %n", player);
         field(player);
             try {
                 for (String ship : typeOfShip) {
+                    String inputFirst;
+                    String inputSecond;
+                    int beginVer;
+                    int beginHor;
+                    int endVer;
+                    int endHor;
+
                     int length = lengthOfShip.get(typeOfShip.indexOf(ship));
                     System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship, length);
+
                     do { //return input data into useful form for array;
-                        inputFirst = scanner.next().toUpperCase();
-                        inputSecond = scanner.next().toUpperCase();
-                        if (inputFirst.compareTo(inputSecond) > 0 || inputFirst.length() > inputSecond.length()) {
-                            endVer = verAddress.indexOf(inputFirst.substring(0, 1));
-                            endHor = horAddress.indexOf(inputFirst.substring(1));
-                            beginVer = verAddress.indexOf(inputSecond.substring(0, 1));
-                            beginHor = horAddress.indexOf(inputSecond.substring(1));
+                        inputFirst = scanner.next().toUpperCase().trim();
+                        inputSecond = scanner.next().toUpperCase().trim();
+                        if (inputFirst.hashCode() > inputSecond.hashCode()) {
+                            endVer = letterAddress.indexOf(inputFirst.substring(0, 1));
+                            endHor = numberAddress.indexOf(inputFirst.substring(1));
+                            beginVer = letterAddress.indexOf(inputSecond.substring(0, 1));
+                            beginHor = numberAddress.indexOf(inputSecond.substring(1));
 
                         } else {
-                            beginVer = verAddress.indexOf(inputFirst.substring(0, 1));
-                            beginHor = horAddress.indexOf(inputFirst.substring(1));
-                            endVer = verAddress.indexOf(inputSecond.substring(0, 1));
-                            endHor = horAddress.indexOf(inputSecond.substring(1));
+                            beginVer = letterAddress.indexOf(inputFirst.substring(0, 1));
+                            beginHor = numberAddress.indexOf(inputFirst.substring(1));
+                            endVer = letterAddress.indexOf(inputSecond.substring(0, 1));
+                            endHor = numberAddress.indexOf(inputSecond.substring(1));
                         }
-                    } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer));
-                    placementOfShip(beginHor, beginVer, endHor, endVer, player);
+                    } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer, player));
+
                 }
             } catch(Exception e){
                 e.getMessage();
@@ -126,15 +128,15 @@ public class Main {
         }
     }
 
-    static boolean checkOfInput(String inputFirst, String inputSecond, int length, int beginHor, int beginVer, int endHor, int endVer) {
+    static boolean checkOfInput(String inputFirst, String inputSecond, int length, int beginHor, int beginVer, int endHor, int endVer, int player) {
         boolean check = true;
         if (!inputFirst.matches("[A-Z]\\d\\d?") || !inputSecond.matches("[A-Z]\\d\\d?")) {
             System.out.println("Error! You entered the wrong coordinates! Try again:\"");
             check = false;
-        } else if (!verAddress.contains(inputFirst.substring(0, 1)) || !horAddress.contains(inputFirst.substring(1))) {
+        } else if (!letterAddress.contains(inputFirst.substring(0, 1)) || !numberAddress.contains(inputFirst.substring(1))) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
-        } else if (!verAddress.contains(inputSecond.substring(0, 1)) || !horAddress.contains(inputSecond.substring(1))) {
+        } else if (!letterAddress.contains(inputSecond.substring(0, 1)) || !numberAddress.contains(inputSecond.substring(1))) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
         } else if (!checkPlacementOfShip(beginHor, beginVer, endHor, endVer, length, player)) {
@@ -156,11 +158,12 @@ public class Main {
         } else {
             //check placing to another one;
             search:
-            for (int i = beginHor - 1; i <= endHor + 1; i++) {
-                if (i > 0 && i < 10) {
-                    for (int j = beginVer - 1; j <= endVer + 1; j++) {
-                        if (j > 0 && j < 10) {
-                            if (getBattleField(player)[j][i] == 'O') {
+            for (int i = beginVer - 1; i <= endVer + 1; i++) {
+                if (i >= 0 && i < 10) {
+                    for (int j = beginHor - 1; j <= endHor + 1; j++) {
+                        if (j >= 0 && j < 10) {
+                            if (getBattleField(player)[i][j] == 'O') {
+                                System.out.printf("this is i - %d, this is j - %d, this is value - %c%n", i, j, getBattleField(player)[i][j]);
                                 System.out.println("Error! You placed it too close to another one. Try again:");
                                 checkReplacement = false;
                                 break search;
@@ -169,6 +172,9 @@ public class Main {
                     }
                 }
             }
+        }
+        if (checkReplacement) {
+            placementOfShip(beginHor, beginVer, endHor, endVer, player);
         }
         return checkReplacement;
     }
@@ -189,13 +195,13 @@ public class Main {
     public static void currentField(char[][] array) {
         // display current version of field;
         System.out.print("  ");
-        for (String a : horAddress) {
+        for (String a : numberAddress) {
             System.out.print(a + " ");
         }
         System.out.println(" ");
 
         for (int i = 0; i < array.length; i++) {
-            System.out.print(verAddress.get(i));
+            System.out.print(letterAddress.get(i));
             for (char b : array[i]) {
                 System.out.print(" " + b);
             }
@@ -212,8 +218,8 @@ public class Main {
         } else {
             enemy = 1;
         }
-        addressVer = verAddress.indexOf(shotInput.substring(0, 1));
-        addressHor = horAddress.indexOf(shotInput.substring(1));
+        addressVer = letterAddress.indexOf(shotInput.substring(0, 1));
+        addressHor = numberAddress.indexOf(shotInput.substring(1));
         if (checkOfShotInput(shotInput)) {
             if(getBattleField(enemy)[addressVer][addressHor] == 'M') {
                 System.out.println("You missed!");
@@ -238,7 +244,7 @@ public class Main {
         if (!shotInput.matches("[A-Z]\\d\\d?")) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
-        } else if (!verAddress.contains(shotInput.substring(0, 1)) || !horAddress.contains(shotInput.substring(1))) {
+        } else if (!letterAddress.contains(shotInput.substring(0, 1)) || !numberAddress.contains(shotInput.substring(1))) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
         }
@@ -327,6 +333,7 @@ public class Main {
     static char[][] getBattleField(int player) {
         return player == 1 ? battleField1 : battleField2;
     }
+
 
 }
 
