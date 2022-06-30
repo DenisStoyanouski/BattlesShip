@@ -26,7 +26,7 @@ public class Main {
     final private static char[][] battleField1= new char[10][10];
     final private static char[][] battleField2= new char[10][10];
 
-    private static int player = 1;
+    private static int player;
 
     private static boolean allShipsAreReplacedPlayer1 = false;
 
@@ -42,6 +42,7 @@ public class Main {
 
     static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
+        player = 1;
         placeYourShip(player);
     }
 
@@ -104,9 +105,9 @@ public class Main {
 
     private static void shooting(int player) {
         if (player == 1) {
-            currentField(fogOfWar(1));
-        } else {
             currentField(fogOfWar(2));
+        } else {
+            currentField(fogOfWar(1));
         }
         System.out.println("---------------------");
             currentField(getBattleField(player));
@@ -120,7 +121,7 @@ public class Main {
             shotInput = scanner.next().toUpperCase();
             resultOfShot(shotInput, player);
         } while(!checkOfShotInput(shotInput));
-        if (!checkGameOver()) {
+        if (!checkGameOver(player)) {
             changePlayer(player);
         }
     }
@@ -136,14 +137,14 @@ public class Main {
         } else if (!verAddress.contains(inputSecond.substring(0, 1)) || !horAddress.contains(inputSecond.substring(1))) {
             System.out.println("Error! You entered the wrong coordinates! Try again:");
             check = false;
-        } else if (!checkReplacementOfShip(beginHor, beginVer, endHor, endVer, length, player)) {
+        } else if (!checkPlacementOfShip(beginHor, beginVer, endHor, endVer, length, player)) {
             check = false;
         }
         return check;
 
     }
 
-    static boolean checkReplacementOfShip(int beginHor, int beginVer, int endHor, int endVer, int length, int player) {
+    static boolean checkPlacementOfShip(int beginHor, int beginVer, int endHor, int endVer, int length, int player) {
         boolean checkReplacement = true;
         //check size of ship
         if (Math.abs(beginHor - endHor) != (length - 1)  && Math.abs(beginVer - endVer) != (length - 1)) {
@@ -259,9 +260,15 @@ public class Main {
     }
 
     // the method check that all ships on the battlefield was sunk;
-    private static boolean checkGameOver() {
+    private static boolean checkGameOver(int player) {
         boolean gameOver = true;
-        for (char[] row : getBattleField(player) ) {
+        int enemy;
+        if (player == 1) {
+            enemy = 2;
+        } else {
+            enemy = 1;
+        }
+        for (char[] row : getBattleField(enemy) ) {
             for (char cell : row) {
                 if (cell == 'O') {
                     gameOver = false;
@@ -298,7 +305,7 @@ public class Main {
     private static void changePlayer(int player) {
         System.out.printf("Press Enter and pass the move to another player for player%d %n", player);
         String change = scanner.nextLine();
-            if (change.isEmpty() && scanner.hasNextLine() && player != 1) {
+            if (scanner.hasNextLine() && player != 1) {
                 player = 1;
                 if (!allShipsAreReplacedPlayer1) {
                     placeYourShip(player);
