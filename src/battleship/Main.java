@@ -157,8 +157,8 @@ public class Main {
             checkReplacement = false;
         } else {
             //check placing to another one;
-            search:
-            for (int i = beginVer - 1; i <= endVer + 1; i++) {
+            boolean stooped = false;
+            for (int i = beginVer - 1; (i <= endVer + 1) && !stooped; i++) {
                 if (i >= 0 && i < 10) {
                     for (int j = beginHor - 1; j <= endHor + 1; j++) {
                         if (j >= 0 && j < 10) {
@@ -166,7 +166,8 @@ public class Main {
                                 System.out.printf("this is i - %d, this is j - %d, this is value - %c%n", i, j, getBattleField(player)[i][j]);
                                 System.out.println("Error! You placed it too close to another one. Try again:");
                                 checkReplacement = false;
-                                break search;
+                                stopped = true;
+                                break;
                             }
                         }
                     }
