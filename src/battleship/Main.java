@@ -1,5 +1,6 @@
 package battleship;
 
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -32,15 +33,36 @@ public class Main {
 
     private static boolean allShipsAreReplacedPlayer2 = false;
 
-    final private static List<String> typeOfShip = Arrays.asList("Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer");
-
-    final private static List<Integer> lengthOfShip = Arrays.asList(5, 4, 3, 3, 2);
-
     final private static List<String> letterAddress = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
 
     final private static List<String> numberAddress = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
     static final Scanner scanner = new Scanner(System.in);
+
+    enum Ship {
+        AIRCRAFT_CARRIER(5, "Aircraft Carrier"),
+        BATTLESHIP(4,"Battleship"),
+        SUBMARINE(3, "Submarine"),
+        CRUISER(3,"Cruiser"),
+        DESTROYER(2, "Destroyer");
+
+        final int size;
+        final String name;
+
+         Ship(int size, String name) {
+            this.size = size;
+            this.name = name;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+    }
 
     public static void main(String[] args) {
         player = 1;
@@ -58,12 +80,16 @@ public class Main {
         currentField(getBattleField(player));
     }
 
+    public static String getInput() {
+        return scanner.next();
+    }
+
     public static void placeYourShip(int player) {
 
         System.out.printf("Player %d, place your ships on the game field %n", player);
         field(player);
             try {
-                for (String ship : typeOfShip) {
+                for (Ship ship : Ship.values()) {
                     String inputFirst;
                     String inputSecond;
                     int beginVer;
@@ -71,12 +97,11 @@ public class Main {
                     int endVer;
                     int endHor;
 
-                    int length = lengthOfShip.get(typeOfShip.indexOf(ship));
-                    System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship, length);
+                    System.out.printf("Enter the coordinates of the %s (%d cells):%n", ship.getName(), ship.getSize());
 
                     do { //return input data into useful form for array;
-                        inputFirst = scanner.next().toUpperCase().trim();
-                        inputSecond = scanner.next().toUpperCase().trim();
+                        inputFirst = getInput().toUpperCase().trim();
+                        inputSecond = getInput().toUpperCase().trim();
                         if (inputFirst.hashCode() > inputSecond.hashCode()) {
                             endVer = letterAddress.indexOf(inputFirst.substring(0, 1));
                             endHor = numberAddress.indexOf(inputFirst.substring(1));
@@ -89,7 +114,7 @@ public class Main {
                             endVer = letterAddress.indexOf(inputSecond.substring(0, 1));
                             endHor = numberAddress.indexOf(inputSecond.substring(1));
                         }
-                    } while (!checkOfInput(inputFirst, inputSecond, length, beginHor, beginVer, endHor, endVer, player));
+                    } while (!checkOfInput(inputFirst, inputSecond, ship.getSize(), beginHor, beginVer, endHor, endVer, player));
 
                 }
             } catch(Exception e){
@@ -120,7 +145,7 @@ public class Main {
     private static void makeShot(int player) {
         String shotInput;
         do {
-            shotInput = scanner.next().toUpperCase();
+            shotInput = getInput().toUpperCase();
             resultOfShot(shotInput, player);
         } while(!checkOfShotInput(shotInput));
         if (!checkGameOver(player)) {
@@ -157,17 +182,15 @@ public class Main {
             checkReplacement = false;
         } else {
             //check placing to another one;
-            boolean stooped = false;
-            for (int i = beginVer - 1; (i <= endVer + 1) && !stooped; i++) {
+            search:
+            for (int i = beginVer - 1; i <= endVer + 1; i++) {
                 if (i >= 0 && i < 10) {
                     for (int j = beginHor - 1; j <= endHor + 1; j++) {
                         if (j >= 0 && j < 10) {
                             if (getBattleField(player)[i][j] == 'O') {
-                                System.out.printf("this is i - %d, this is j - %d, this is value - %c%n", i, j, getBattleField(player)[i][j]);
                                 System.out.println("Error! You placed it too close to another one. Try again:");
                                 checkReplacement = false;
-                                stopped = true;
-                                break;
+                                break search;
                             }
                         }
                     }
@@ -310,16 +333,15 @@ public class Main {
 
     // the method for switching between players by enter;
     private static void changePlayer(int player) {
-        System.out.printf("Press Enter and pass the move to another player for player%d %n", player);
-        String change = scanner.nextLine();
-            if (scanner.hasNextLine() && player != 1) {
+        promptEnterKey();
+            if (player != 1) {
                 player = 1;
                 if (!allShipsAreReplacedPlayer1) {
                     placeYourShip(player);
                 } else {
                     shooting(player);
                 }
-            } else if (scanner.hasNextLine() && player != 2 ) {
+            } else if (player != 2 ) {
                 player = 2;
                 if (!allShipsAreReplacedPlayer2) {
                     placeYourShip(player);
@@ -327,6 +349,16 @@ public class Main {
                     shooting(player);
                 }
             }
+    }
+
+    public static void promptEnterKey(){
+        System.out.println("Press Enter and pass the move to another player");
+        System.out.print("...");
+        try {
+            int read = System.in.read(new byte[2]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
